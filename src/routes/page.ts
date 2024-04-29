@@ -1,12 +1,11 @@
 import { fetchPageById, fetchBlocks } from "../api/notion";
 import { parsePageId } from "../api/utils";
-import { createResponse } from "../response";
 import { getTableData } from "./table";
-import { BlockType, CollectionType, HandlerRequest } from "../api/types";
+import { BlockType, CollectionType } from "../api/types";
 
-export async function pageRoute(req: HandlerRequest) {
-  const pageId = parsePageId(req.params.pageId);
-  const page = await fetchPageById(pageId!, req.notionToken);
+export async function pageRoute(paramsPageId: string, notionToken?: string) {
+  const pageId = parsePageId(paramsPageId);
+  const page = await fetchPageById(pageId!, notionToken);
 
   const baseBlocks = page.recordMap.block;
 
@@ -34,7 +33,7 @@ export async function pageRoute(req: HandlerRequest) {
       break;
     }
 
-    const newBlocks = await fetchBlocks(pendingBlocks, req.notionToken).then(
+    const newBlocks = await fetchBlocks(pendingBlocks, notionToken).then(
       (res) => res.recordMap.block
     );
 
@@ -59,7 +58,7 @@ export async function pageRoute(req: HandlerRequest) {
     });
 
     for (let b of pendingCollections) {
-      const collPage = await fetchPageById(b!, req.notionToken);
+      const collPage = await fetchPageById(b!, notionToken);
 
       const coll = Object.keys(collPage.recordMap.collection).map(
         (k) => collPage.recordMap.collection[k]
@@ -74,7 +73,7 @@ export async function pageRoute(req: HandlerRequest) {
       const { rows, schema } = await getTableData(
         coll,
         collView.value.id,
-        req.notionToken,
+        notionToken,
         true
       );
 
@@ -95,5 +94,5 @@ export async function pageRoute(req: HandlerRequest) {
     }
   }
 
-  return createResponse(allBlocks);
+  return allBlocks;
 }

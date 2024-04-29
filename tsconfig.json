@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "module": "commonjs",
+    "module": "es6",
     "target": "esnext",
     "lib": ["esnext", "DOM", "DOM.Iterable", "WebWorker"],
     "alwaysStrict": true,
@@ -13,8 +13,7 @@
   },
   "include": [
     "./src/*.ts",
-    "./src/**/*.ts",
-    "./node_modules/@cloudflare/workers-types/index.d.ts"
+    "./src/**/*.ts"
   ],
   "exclude": ["node_modules/", "dist/"]
 }

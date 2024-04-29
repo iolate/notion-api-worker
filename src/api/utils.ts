@@ -2,7 +2,6 @@ import {
   DecorationType,
   ColumnType,
   RowContentType,
-  BlockType,
   RowType,
 } from "./types";
 

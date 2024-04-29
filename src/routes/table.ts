@@ -4,9 +4,7 @@ import {
   RowContentType,
   CollectionType,
   RowType,
-  HandlerRequest,
 } from "../api/types";
-import { createResponse } from "../response";
 
 export const getTableData = async (
   collection: CollectionType,
@@ -56,16 +54,16 @@ export const getTableData = async (
   return { rows, schema: collectionRows };
 };
 
-export async function tableRoute(req: HandlerRequest) {
-  const pageId = parsePageId(req.params.pageId);
-  const page = await fetchPageById(pageId!, req.notionToken);
+export async function tableRoute(paramsPageId: string, notionToken?: string) {
+  const pageId = parsePageId(paramsPageId);
+  const page = await fetchPageById(pageId!, notionToken);
 
-  if (!page.recordMap.collection)
-    return createResponse(
-      JSON.stringify({ error: "No table found on Notion page: " + pageId }),
-      {},
-      401
-    );
+  if (!page.recordMap.collection) {
+    return {
+      data: { error: "No table found on Notion page: " + pageId },
+      status: 401,
+    }
+  }
 
   const collection = Object.keys(page.recordMap.collection).map(
     (k) => page.recordMap.collection[k]
@@ -80,8 +78,11 @@ export async function tableRoute(req: HandlerRequest) {
   const { rows } = await getTableData(
     collection,
     collectionView.value.id,
-    req.notionToken
+    notionToken
   );
 
-  return createResponse(rows);
+  return {
+    data: rows,
+    status: 200,
+  };
 }
